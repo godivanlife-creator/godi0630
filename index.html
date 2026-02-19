@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Godi 守護者系統 - GodiVanLife</title>
+    <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+    <style>
+        :root { --primary-color: #e67e22; --bg-color: #fdf6e3; }
+        body { font-family: 'PingFang TC', sans-serif; background: var(--bg-color); color: #333; margin: 0; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
+        .container { width: 90%; max-width: 400px; padding: 20px; text-align: center; }
+        .pet-avatar { width: 180px; height: 180px; border-radius: 50%; border: 8px solid white; box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin-top: 20px; object-fit: cover; }
+        h1 { color: var(--primary-color); margin-bottom: 5px; }
+        .status-badge { background: #ff4757; color: white; padding: 5px 15px; border-radius: 20px; font-weight: bold; margin-bottom: 20px; display: inline-block; }
+        .info-card { background: white; border-radius: 15px; padding: 15px; text-align: left; margin: 20px 0; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .info-item { margin-bottom: 8px; font-size: 15px; }
+        .btn-location { background: var(--primary-color); color: white; border: none; padding: 15px 25px; border-radius: 30px; font-size: 18px; font-weight: bold; cursor: pointer; width: 100%; transition: 0.3s; box-shadow: 0 4px 10px rgba(230, 126, 34, 0.3); }
+        .btn-call { background: #2ed573; color: white; text-decoration: none; display: block; padding: 12px; border-radius: 30px; margin-top: 10px; font-weight: bold; }
+        .social-link { margin-top: 25px; color: #888; text-decoration: none; font-size: 14px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <img src="https://path-to-your-godi-image.jpg" class="pet-avatar" alt="Godi">
+    
+    <h1>我是 Godi</h1>
+    <div class="status-badge">我迷路了，請幫幫我</div>
+
+    <div class="info-card">
+        <div class="info-item">🐾 <strong>特色：</strong>永遠活力十足</div>
+        <div class="info-item">🎾 <strong>最愛：</strong>超喜歡啾啾聲！</div>
+        <div class="info-item">⚠️ <strong>注意：</strong>我有點討厭小朋友，請小心靠近喔</div>
+    </div>
+
+    <button class="btn-location" onclick="handleReport()">📍 點擊回傳位置給主人</button>
+    <a href="tel:0932865917" class="btn-call">📞 直接撥打給主人 (0932)</a>
+
+    <a href="https://www.instagram.com/godi_van_life" target="_blank" class="social-link">
+        了解更多 Godi 的生活：@godi_van_life
+    </a>
+</div>
+
+<script>
+    // 初始化 LIFF
+    async function initLIFF() {
+        try {
+            await liff.init({ liffId: "你的_LIFF_ID" });
+        } catch (err) {
+            console.error("LIFF 初始化失敗", err);
+        }
+    }
+
+    async function handleReport() {
+        // 先檢查權限
+        if (!liff.isLoggedIn()) {
+            liff.login();
+            return;
+        }
+
+        liff.getLocation().then(res => {
+            const { latitude, longitude } = res;
+            // 這裡可以串接你的 API 把座標傳給官方帳號推播
+            alert("位置已取得！正在通知主人...");
+            console.log(`緯度: ${latitude}, 經度: ${longitude}`);
+            
+            // 測試期間可以開啟這個 Google Map 連結檢查
+            // window.location.href = `https://www.google.com/maps?q=${latitude},${longitude}`;
+        }).catch(err => {
+            alert("取得位置失敗，請確認是否開啟手機 GPS 並允許權限。");
+        });
+    }
+
+    initLIFF();
+</script>
+
+</body>
+</html>
