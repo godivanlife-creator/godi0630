@@ -4,15 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Godi 守護系統 - GodiVanLife</title>
-    <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     <style>
         :root { --main-orange: #e67e22; --soft-bg: #fdf6e3; --status-red: #ff4757; }
         body { font-family: sans-serif; background: var(--soft-bg); color: #333; margin: 0; display: flex; justify-content: center; min-height: 100vh; }
         .app-container { width: 100%; max-width: 420px; padding: 25px; text-align: center; }
         .pet-avatar { width: 180px; height: 180px; border-radius: 50%; border: 6px solid #fff; box-shadow: 0 8px 20px rgba(0,0,0,0.1); object-fit: cover; }
         .info-card { background: white; border-radius: 18px; padding: 20px; text-align: left; margin: 20px 0; box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
-        .btn-main { background: var(--main-orange); color: white; border: none; padding: 18px; border-radius: 35px; font-size: 19px; font-weight: bold; width: 100%; cursor: pointer; box-shadow: 0 6px 15px rgba(230, 126, 34, 0.3); }
+        .btn-sms { background: #007aff; color: white; border: none; padding: 18px; border-radius: 35px; font-size: 19px; font-weight: bold; width: 100%; cursor: pointer; box-shadow: 0 6px 15px rgba(0, 122, 255, 0.3); }
         .btn-call { display: block; margin-top: 15px; color: #2ed573; text-decoration: none; font-weight: bold; padding: 12px; border: 2px solid #2ed573; border-radius: 35px; }
+        .loading { display: none; margin-top: 10px; font-size: 14px; color: #666; }
     </style>
 </head>
 <body>
@@ -26,64 +26,28 @@
         <p>⚠️ <strong>注意：</strong>討厭小孩，請小心靠近</p>
     </div>
 
-    <button class="btn-main" onclick="startGoogleLocation()">📍 透過 Google 定位並通報</button>
+    <button class="btn-sms" onclick="sendSMSLocation()">✉️ 透過簡訊通報主人位置</button>
+    <div id="loadingText" class="loading">正在取得定位...</div>
+    
     <a href="tel:0932865917" class="btn-call">📞 直接電話聯繫主人</a>
 </div>
 
 <script>
-    async function initLIFF() {
-        await liff.init({ liffId: "2009176986-3VxkPQWI" });
-    }
+    function sendSMSLocation() {
+        const loading = document.getElementById('loadingText');
+        loading.style.display = 'block';
 
-    function startGoogleLocation() {
-        if (!liff.isLoggedIn()) {
-            liff.login();
-            return;
-        }
-
-        // 使用 Google 瀏覽器原生定位方法
         if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(successCallback, errorCallback, {
-                enableHighAccuracy: true,
-                timeout: 10000,
-                maximumAge: 0
-            });
-        } else {
-            alert("您的瀏覽器不支援 Google 定位功能。");
-        }
-    }
-
-    function successCallback(position) {
-        const lat = position.coords.latitude;
-        const lng = position.coords.longitude;
-        const mapUrl = `https://www.google.com/maps?q=${lat},${lng}`;
-
-        // 傳送訊息給主人 (官方帳號)
-        liff.sendMessages([
-            {
-                type: 'text',
-                text: `【Godi 尋寵通報】\n已透過 Google 定位發現 Godi！\n地圖連結：${mapUrl}`
-            }
-        ]).then(() => {
-            alert("通報成功！謝謝您的幫助。");
-            liff.closeWindow();
-        }).catch(err => {
-            alert("傳送失敗，請確認是否已加入好友。");
-        });
-    }
-
-    function errorCallback(error) {
-        let msg = "";
-        switch(error.code) {
-            case error.PERMISSION_DENIED: msg = "請允許瀏覽器存取位置。"; break;
-            case error.POSITION_UNAVAILABLE: msg = "無法取得位置資訊。"; break;
-            case error.TIMEOUT: msg = "定位逾時。"; break;
-        }
-        alert(msg);
-    }
-
-    initLIFF();
-</script>
-
-</body>
-</html>
+            navigator.geolocation.getCurrentPosition((position) => {
+                const lat = position.coords.latitude;
+                const lng = position.coords.longitude;
+                const mapUrl = `https://www.google.com/maps?q=${lat},${lng}`;
+                
+                // 設定收件人與簡訊內容
+                const phoneNumber = "0932865917";
+                const message = encodeURIComponent(`【Godi 尋寵通報】我發現了 Godi！目前位置：${mapUrl}`);
+                
+                // 喚起簡訊介面
+                window.location.href = `sms:${phoneNumber}?body=${message}`;
+                loading.style.display = 'none';
+            }, (error) => {
