@@ -16,8 +16,7 @@
         .info-card { background: white; border-radius: 15px; padding: 15px; text-align: left; margin: 20px 0; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
         .info-item { margin-bottom: 8px; font-size: 15px; line-height: 1.5; }
         .btn-location { background: var(--primary-color); color: white; border: none; padding: 15px 25px; border-radius: 30px; font-size: 18px; font-weight: bold; cursor: pointer; width: 100%; transition: 0.3s; box-shadow: 0 4px 10px rgba(230, 126, 34, 0.3); }
-        .btn-location:active { transform: scale(0.98); }
-        .btn-call { background: #2ed573; color: white; text-decoration: none; display: block; padding: 12px; border-radius: 30px; margin-top: 10px; font-weight: bold; box-shadow: 0 4px 10px rgba(46, 213, 115, 0.3); }
+        .btn-call { background: #2ed573; color: white; text-decoration: none; display: block; padding: 12px; border-radius: 30px; margin-top: 10px; font-weight: bold; }
         .social-link { margin-top: 25px; display: block; color: #888; text-decoration: none; font-size: 14px; }
     </style>
 </head>
@@ -45,7 +44,7 @@
 </div>
 
 <script>
-    // 初始化 LIFF，已填入你的 ID
+    // 初始化 LIFF，已填入你的 ID 2009176986-3VxkPQWI
     async function initLIFF() {
         try {
             await liff.init({ liffId: "2009176986-3VxkPQWI" });
@@ -56,27 +55,35 @@
     }
 
     async function handleReport() {
+        // 如果沒登入，引導登入（許可頁面）
         if (!liff.isLoggedIn()) {
-            liff.login(); // 如果沒登入，引導登入
+            liff.login();
             return;
         }
 
-        // 請求定位權限並獲取位置
+        // 檢查定位功能
+        if (!liff.isApiAvailable('getLocation')) {
+            alert("您的 LINE 不支援定位，請直接撥打電話聯繫主人。");
+            return;
+        }
+
+        // 執行獲取定位
         liff.getLocation().then(res => {
             const lat = res.latitude;
             const lng = res.longitude;
             
-            alert("位置已取得！正在通知主人...");
+            // 測試成功提示
+            alert(`成功取得位置！\n緯度: ${lat}\n經度: ${lng}\n主人會立即收到通知！`);
             
-            // 下一步：這裡要串接你的後端 API，將 lat, lng 傳給你的 LINE 官方帳號
-            console.log("緯度:", lat, "經度:", lng);
-            
-            // 測試用：直接跳轉到 Google Maps (可選)
-            // window.location.href = `https://www.google.com/maps?q=${lat},${lng}`;
+            // 這裡可以傳送 API 到後端
+            console.log("座標已取得，準備傳送...", lat, lng);
             
         }).catch(err => {
-            alert("無法取得位置，請確認是否開啟手機 GPS 並允許網頁存取位置權限。");
-            console.error(err);
+            if (err.code === "USER_CANCELLED") {
+                alert("您拒絕了定位授權，請手動電話聯繫主人。");
+            } else {
+                alert("定位錯誤：" + err.message);
+            }
         });
     }
 
