@@ -7,34 +7,37 @@
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     <style>
         :root { --primary-color: #e67e22; --bg-color: #fdf6e3; }
-        body { font-family: 'PingFang TC', sans-serif; background: var(--bg-color); color: #333; margin: 0; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
+        body { font-family: 'PingFang TC', 'Microsoft JhengHei', sans-serif; background: var(--bg-color); color: #333; margin: 0; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
         .container { width: 90%; max-width: 400px; padding: 20px; text-align: center; }
         .pet-avatar { width: 180px; height: 180px; border-radius: 50%; border: 8px solid white; box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin-top: 20px; object-fit: cover; }
         h1 { color: var(--primary-color); margin-bottom: 5px; }
-        .status-badge { background: #ff4757; color: white; padding: 5px 15px; border-radius: 20px; font-weight: bold; margin-bottom: 20px; display: inline-block; }
+        .status-badge { background: #ff4757; color: white; padding: 5px 15px; border-radius: 20px; font-weight: bold; margin-bottom: 20px; display: inline-block; animation: pulse 2s infinite; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.7; } 100% { opacity: 1; } }
         .info-card { background: white; border-radius: 15px; padding: 15px; text-align: left; margin: 20px 0; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
-        .info-item { margin-bottom: 8px; font-size: 15px; }
+        .info-item { margin-bottom: 8px; font-size: 15px; line-height: 1.5; }
         .btn-location { background: var(--primary-color); color: white; border: none; padding: 15px 25px; border-radius: 30px; font-size: 18px; font-weight: bold; cursor: pointer; width: 100%; transition: 0.3s; box-shadow: 0 4px 10px rgba(230, 126, 34, 0.3); }
-        .btn-call { background: #2ed573; color: white; text-decoration: none; display: block; padding: 12px; border-radius: 30px; margin-top: 10px; font-weight: bold; }
-        .social-link { margin-top: 25px; color: #888; text-decoration: none; font-size: 14px; }
+        .btn-location:active { transform: scale(0.98); }
+        .btn-call { background: #2ed573; color: white; text-decoration: none; display: block; padding: 12px; border-radius: 30px; margin-top: 10px; font-weight: bold; box-shadow: 0 4px 10px rgba(46, 213, 115, 0.3); }
+        .social-link { margin-top: 25px; display: block; color: #888; text-decoration: none; font-size: 14px; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <img src="https://path-to-your-godi-image.jpg" class="pet-avatar" alt="Godi">
+    <img src="https://path-to-your-image.jpg" class="pet-avatar" alt="Godi">
     
     <h1>我是 Godi</h1>
-    <div class="status-badge">我迷路了，請幫幫我</div>
+    <div class="status-badge">🚨 我迷路了，請幫幫我</div>
 
     <div class="info-card">
         <div class="info-item">🐾 <strong>特色：</strong>永遠活力十足</div>
         <div class="info-item">🎾 <strong>最愛：</strong>超喜歡啾啾聲！</div>
-        <div class="info-item">⚠️ <strong>注意：</strong>我有點討厭小朋友，請小心靠近喔</div>
+        <div class="info-item">⚠️ <strong>注意：</strong>我有點討厭小朋友，請小心靠近</div>
     </div>
 
     <button class="btn-location" onclick="handleReport()">📍 點擊回傳位置給主人</button>
-    <a href="tel:0932865917" class="btn-call">📞 直接撥打給主人 (0932)</a>
+    
+    <a href="tel:0932865917" class="btn-call">📞 直接撥打給主人</a>
 
     <a href="https://www.instagram.com/godi_van_life" target="_blank" class="social-link">
         了解更多 Godi 的生活：@godi_van_life
@@ -42,32 +45,38 @@
 </div>
 
 <script>
-    // 初始化 LIFF
+    // 初始化 LIFF，已填入你的 ID
     async function initLIFF() {
         try {
-            await liff.init({ liffId: "你的_LIFF_ID" });
+            await liff.init({ liffId: "2009176986-3VxkPQWI" });
+            console.log("LIFF 初始化成功");
         } catch (err) {
             console.error("LIFF 初始化失敗", err);
         }
     }
 
     async function handleReport() {
-        // 先檢查權限
         if (!liff.isLoggedIn()) {
-            liff.login();
+            liff.login(); // 如果沒登入，引導登入
             return;
         }
 
+        // 請求定位權限並獲取位置
         liff.getLocation().then(res => {
-            const { latitude, longitude } = res;
-            // 這裡可以串接你的 API 把座標傳給官方帳號推播
-            alert("位置已取得！正在通知主人...");
-            console.log(`緯度: ${latitude}, 經度: ${longitude}`);
+            const lat = res.latitude;
+            const lng = res.longitude;
             
-            // 測試期間可以開啟這個 Google Map 連結檢查
-            // window.location.href = `https://www.google.com/maps?q=${latitude},${longitude}`;
+            alert("位置已取得！正在通知主人...");
+            
+            // 下一步：這裡要串接你的後端 API，將 lat, lng 傳給你的 LINE 官方帳號
+            console.log("緯度:", lat, "經度:", lng);
+            
+            // 測試用：直接跳轉到 Google Maps (可選)
+            // window.location.href = `https://www.google.com/maps?q=${lat},${lng}`;
+            
         }).catch(err => {
-            alert("取得位置失敗，請確認是否開啟手機 GPS 並允許權限。");
+            alert("無法取得位置，請確認是否開啟手機 GPS 並允許網頁存取位置權限。");
+            console.error(err);
         });
     }
 
