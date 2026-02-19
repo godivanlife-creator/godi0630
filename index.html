@@ -51,3 +51,15 @@
                 window.location.href = `sms:${phoneNumber}?body=${message}`;
                 loading.style.display = 'none';
             }, (error) => {
+                loading.style.display = 'none';
+                alert("無法取得精確定位，將直接開啟簡訊。");
+                window.location.href = `sms:0932865917?body=${encodeURIComponent("【Godi 尋寵通報】我發現了 Godi，但我無法分享精確定位，請與我聯繫。")}`;
+            }, { enableHighAccuracy: true, timeout: 5000 });
+        } else {
+            alert("您的手機不支援定位功能。");
+        }
+    }
+</script>
+
+</body>
+</html>
