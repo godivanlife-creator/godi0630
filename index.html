@@ -1,64 +1,200 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
+<html lang="zh">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Godi 守護系統 - GodiVanLife</title>
-    <style>
-        :root { --main-orange: #e67e22; --soft-bg: #fdf6e3; --status-red: #ff4757; }
-        body { font-family: sans-serif; background: var(--soft-bg); color: #333; margin: 0; display: flex; justify-content: center; min-height: 100vh; }
-        .app-container { width: 100%; max-width: 420px; padding: 25px; text-align: center; }
-        .pet-avatar { width: 180px; height: 180px; border-radius: 50%; border: 6px solid #fff; box-shadow: 0 8px 20px rgba(0,0,0,0.1); object-fit: cover; }
-        .info-card { background: white; border-radius: 18px; padding: 20px; text-align: left; margin: 20px 0; box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
-        .btn-sms { background: #007aff; color: white; border: none; padding: 18px; border-radius: 35px; font-size: 19px; font-weight: bold; width: 100%; cursor: pointer; box-shadow: 0 6px 15px rgba(0, 122, 255, 0.3); }
-        .btn-call { display: block; margin-top: 15px; color: #2ed573; text-decoration: none; font-weight: bold; padding: 12px; border: 2px solid #2ed573; border-radius: 35px; }
-        .loading { display: none; margin-top: 10px; font-size: 14px; color: #666; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Godi Pet Tag | GodiVanLife</title>
+
+<style>
+
+:root{
+--orange:#e67e22;
+--bg:#fdf6e3;
+--warn:#ff4757;
+}
+
+body{
+font-family:Arial,'PingFang TC','Microsoft JhengHei',sans-serif;
+background:var(--bg);
+margin:0;
+display:flex;
+justify-content:center;
+min-height:100vh;
+}
+
+.app{
+width:100%;
+max-width:420px;
+padding:25px;
+text-align:center;
+}
+
+.pet-avatar{
+width:180px;
+height:180px;
+border-radius:50%;
+border:6px solid white;
+box-shadow:0 8px 20px rgba(0,0,0,0.1);
+object-fit:cover;
+}
+
+.card{
+background:white;
+border-radius:18px;
+padding:20px;
+text-align:left;
+margin:20px 0;
+box-shadow:0 4px 12px rgba(0,0,0,0.05);
+line-height:1.6;
+}
+
+.btn{
+display:block;
+width:100%;
+padding:18px;
+border-radius:35px;
+font-size:18px;
+font-weight:bold;
+border:none;
+cursor:pointer;
+margin-top:12px;
+color:white;
+text-decoration:none;
+}
+
+.btn-sms{
+background:#007aff;
+}
+
+.btn-call{
+background:#2ed573;
+}
+
+.btn-ig{
+background:linear-gradient(45deg,#f09433,#dc2743,#bc1888);
+}
+
+.lang{
+margin-bottom:10px;
+}
+
+.lang button{
+padding:5px 10px;
+border:none;
+border-radius:10px;
+margin:2px;
+cursor:pointer;
+}
+
+.loading{
+display:none;
+font-size:14px;
+margin-top:10px;
+color:#666;
+}
+
+</style>
 </head>
+
 <body>
 
-<div class="app-container">
-    <img src="https://instagram.fkhh1-2.fna.fbcdn.net/v/t51.82787-15/514536579_18039636578639256_5405334103636268789_n.jpg?stp=dst-jpg_e35_tt6&_nc_cat=108&ig_cache_key=MzY2Njk4ODk1NDY4NDk1ODA5MA%3D%3D.3-ccb7-5&ccb=7-5&_nc_sid=58cdad&efg=eyJ2ZW5jb2RlX3RhZyI6InhwaWRzLjE0NDB4MTkyMC5zZHIuQzMifQ%3D%3D&_nc_ohc=sUEztQTpUQEQ7kNvwGEpDNo&_nc_oc=AdnzsQUGjQQxnPGkFTt2TFklTNqF6KkLpkU9eTm2UUswKDu-JR00PVn1aSqNDmv-06o&_nc_ad=z-m&_nc_cid=0&_nc_zt=23&_nc_ht=instagram.fkhh1-2.fna&_nc_gid=kbDuFVQj11d6CLmSffraZw&oh=00_AftwEChGhuaN8AB6erfKMfLSdju8jtCokWMVbN2XoGbLOQ&oe=699CC00B" class="pet-avatar" alt="Godi">
-    
-    <h1>我是 Godi</h1>
-    <div class="info-card">
-        <p>🐾 <strong>特色：</strong>活力十足，喜歡啾啾聲</p>
-        <p>⚠️ <strong>注意：</strong>討厭小孩，請小心靠近</p>
-    </div>
+<div class="app">
 
-    <button class="btn-sms" onclick="sendSMSLocation()">✉️ 透過簡訊通報主人位置</button>
-    <div id="loadingText" class="loading">正在取得定位...</div>
-    
-    <a href="tel:0932865917" class="btn-call">📞 直接電話聯繫主人</a>
+<div class="lang">
+<button onclick="setLang('zh')">中文</button>
+<button onclick="setLang('ja')">日本語</button>
+<button onclick="setLang('en')">English</button>
+</div>
+
+<img src="https://instagram.fkhh1-2.fna.fbcdn.net/v/t51.82787-15/514536579_18039636578639256_5405334103636268789_n.jpg"
+class="pet-avatar">
+
+<h1>Godi</h1>
+
+<div class="card" id="info"></div>
+
+<button class="btn btn-sms" onclick="sendSMSLocation()" id="smsBtn"></button>
+
+<a href="tel:0932865917" class="btn btn-call" id="callBtn"></a>
+
+<a href="https://www.instagram.com/" target="_blank" class="btn btn-ig" id="igBtn"></a>
+
+<div id="loading" class="loading">定位中...</div>
+
 </div>
 
 <script>
-    function sendSMSLocation() {
-        const loading = document.getElementById('loadingText');
-        loading.style.display = 'block';
 
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition((position) => {
-                const lat = position.coords.latitude;
-                const lng = position.coords.longitude;
-                const mapUrl = `https://www.google.com/maps?q=${lat},${lng}`;
-                
-                // 設定收件人與簡訊內容
-                const phoneNumber = "0932865917";
-                const message = encodeURIComponent(`【Godi 尋寵通報】我發現了 Godi！目前位置：${mapUrl}`);
-                
-                // 喚起簡訊介面
-                window.location.href = `sms:${phoneNumber}?body=${message}`;
-                loading.style.display = 'none';
-            }, (error) => {
-                loading.style.display = 'none';
-                alert("無法取得精確定位，將直接開啟簡訊。");
-                window.location.href = `sms:0932865917?body=${encodeURIComponent("【Godi 尋寵通報】我發現了 Godi，但我無法分享精確定位，請與我聯繫。")}`;
-            }, { enableHighAccuracy: true, timeout: 5000 });
-        } else {
-            alert("您的手機不支援定位功能。");
-        }
-    }
+const text={
+
+zh:{
+info:"🐾 特色：活力十足，喜歡啾啾聲<br><br>⚠️ 注意：討厭小孩，請小心靠近",
+sms:"✉️ 透過簡訊通報主人位置",
+call:"📞 直接電話聯繫主人",
+ig:"📸 使用 Instagram 聯絡主人"
+},
+
+ja:{
+info:"🐾 特徴：とても元気でピーピー音が好き<br><br>⚠️ 注意：子供が苦手です。ゆっくり近づいてください",
+sms:"✉️ SMSで位置を送る",
+call:"📞 電話で連絡",
+ig:"📸 Instagramで連絡"
+},
+
+en:{
+info:"🐾 Personality: Energetic and loves squeaky sounds<br><br>⚠️ Warning: Not friendly with children. Please approach carefully.",
+sms:"✉️ Send location via SMS",
+call:"📞 Call owner",
+ig:"📸 Contact via Instagram"
+}
+
+};
+
+function setLang(lang){
+
+document.getElementById("info").innerHTML=text[lang].info;
+document.getElementById("smsBtn").innerText=text[lang].sms;
+document.getElementById("callBtn").innerText=text[lang].call;
+document.getElementById("igBtn").innerText=text[lang].ig;
+
+}
+
+setLang("zh");
+
+function sendSMSLocation(){
+
+const loading=document.getElementById("loading");
+loading.style.display="block";
+
+if(navigator.geolocation){
+
+navigator.geolocation.getCurrentPosition((pos)=>{
+
+const lat=pos.coords.latitude;
+const lng=pos.coords.longitude;
+
+const map=`https://www.google.com/maps?q=${lat},${lng}`;
+
+const phone="0932865917";
+
+const msg=encodeURIComponent(`【Godi Location】I found Godi. Location: ${map}`);
+
+window.location.href=`sms:${phone}?body=${msg}`;
+
+loading.style.display="none";
+
+},()=>{
+
+loading.style.display="none";
+alert("無法取得定位");
+
+});
+
+}
+
+}
+
 </script>
 
 </body>
